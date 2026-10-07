@@ -1,0 +1,14 @@
+{
+  "name": "A+ Core 2 Drill",
+  "short_name": "Core 2",
+  "description": "CompTIA A+ Core 2 (220-1202) practice drill",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0A0C11",
+  "theme_color": "#0A0C11",
+  "icons": [
+    { "src": "icon.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }
+  ]
+}

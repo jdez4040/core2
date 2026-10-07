@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Core 2">
+<meta name="theme-color" content="#0A0C11">
+<meta name="format-detection" content="telephone=no">
+<title>A+ Core 2 Drill — 220-1202</title>
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="manifest" href="manifest.webmanifest"><rect width='180' height='180' rx='40' fill='%230A0C11'/><text x='90' y='104' font-family='-apple-system,Helvetica,Arial' font-size='64' font-weight='700' fill='%23FFB020' text-anchor='middle'>A+</text><text x='90' y='138' font-family='-apple-system,Helvetica,Arial' font-size='24' font-weight='600' fill='%238C95A6' text-anchor='middle'>CORE 2</text></svg>">
+<style>
+:root{
+  --bg:#0A0C11; --surface:#151922; --surface2:#1D222D; --raise:#242A37;
+  --line:#2A3140; --ink:#EDF0F5; --dim:#8C95A6; --faint:#5C6575;
+  --gold:#FFB020; --gold-dim:#4A3613;
+  --ok:#35D08A; --ok-dim:#123025; --bad:#FF6B6B; --bad-dim:#36181C;
+  --sans:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",system-ui,sans-serif;
+  --mono:ui-monospace,"SF Mono",SFMono-Regular,Menlo,monospace;
+  --top:env(safe-area-inset-top,0px);
+  --bot:env(safe-area-inset-bottom,0px);
+  --r:14px;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0;height:100%;overscroll-behavior:none}
+body{
+  background:var(--bg);color:var(--ink);font-family:var(--sans);
+  font-size:16px;line-height:1.45;-webkit-font-smoothing:antialiased;
+  -webkit-text-size-adjust:100%;
+}
+button{font:inherit;color:inherit;background:none;border:0;margin:0;padding:0;touch-action:manipulation;cursor:pointer}
+.hide{display:none!important}
+
+/* ---------- shell ---------- */
+#app{position:fixed;inset:0;display:flex;flex-direction:column;overflow:hidden}
+.scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+.pad{padding:0 16px}
+.screen{display:flex;flex-direction:column;height:100%}
+
+/* ---------- top bars ---------- */
+.nav{
+  flex:none;padding-top:calc(var(--top) + 10px);padding-bottom:10px;
+  background:rgba(10,12,17,.86);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--line);
+}
+.nav .line{display:flex;align-items:center;gap:12px;padding:0 16px;min-height:34px}
+.nav .ttl{font-size:17px;font-weight:650;letter-spacing:-.01em}
+.nav .mono{font-family:var(--mono);font-size:13px;color:var(--dim);font-variant-numeric:tabular-nums}
+.iconbtn{
+  width:44px;height:44px;flex:none;border-radius:50%;background:var(--surface2);
+  display:grid;place-items:center;font-size:17px;color:var(--dim);
+}
+.iconbtn:active{background:var(--raise)}
+.spacer{margin-left:auto}
+
+/* segmented progress rail */
+.rail{display:flex;gap:2px;padding:10px 16px 0;align-items:flex-end}
+.rail.dense{gap:1px}
+.seg{flex:1;height:5px;border-radius:3px;background:var(--line);transition:background .18s,height .18s}
+.seg.now{background:var(--gold);height:9px}
+.seg.ans{background:var(--faint)}
+.seg.ok{background:var(--ok)}
+.seg.no{background:var(--bad)}
+
+/* ---------- home ---------- */
+.hero{padding:26px 16px 18px}
+.kicker{font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin:0 0 8px}
+h1{margin:0 0 8px;font-size:34px;line-height:1.08;font-weight:700;letter-spacing:-.025em}
+.lede{margin:0;color:var(--dim);font-size:15px}
+
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px;margin:0 16px 14px}
+.card h2{margin:0 0 3px;font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);font-weight:600}
+.card .note{margin:0 0 14px;color:var(--faint);font-size:13.5px}
+
+.resume{border-color:var(--gold-dim);background:linear-gradient(180deg,#1C1709,var(--surface))}
+.resume h2{color:var(--gold)}
+
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.chip{
+  border:1.5px solid var(--line);background:var(--surface2);border-radius:12px;
+  padding:13px 12px;text-align:left;min-height:62px;display:flex;flex-direction:column;justify-content:center;
+}
+.chip .t{font-weight:600;font-size:15px}
+.chip .s{font-family:var(--mono);font-size:11px;color:var(--faint);margin-top:2px}
+.chip[aria-pressed="true"]{border-color:var(--gold);background:var(--gold-dim)}
+.chip[aria-pressed="true"] .s{color:var(--gold)}
+.chip.wide{grid-column:1/-1}
+
+.seglist{display:flex;background:var(--surface2);border-radius:11px;padding:3px;gap:3px}
+.seglist button{flex:1;padding:10px 6px;border-radius:9px;font-size:14px;font-weight:600;color:var(--dim)}
+.seglist button[aria-pressed="true"]{background:var(--raise);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.4)}
+.modenote{margin:10px 0 0;font-size:13px;color:var(--faint);min-height:34px}
+
+.cta{
+  display:block;width:100%;background:var(--gold);color:#17120A;font-weight:700;font-size:17px;
+  border-radius:13px;padding:16px;text-align:center;margin-top:4px;
+}
+.cta:active{filter:brightness(.9)}
+.cta.ghost{background:none;border:1.5px solid var(--line);color:var(--ink);font-weight:600}
+.cta.ghost:active{background:var(--surface2)}
+
+/* ---------- tab bar ---------- */
+.tabs{
+  flex:none;display:flex;border-top:1px solid var(--line);
+  background:rgba(10,12,17,.92);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);
+  padding-bottom:var(--bot);
+}
+.tabs button{flex:1;padding:9px 0 7px;display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--faint)}
+.tabs button .gl{font-size:19px;line-height:1}
+.tabs button .lb{font-size:10.5px;font-weight:600;letter-spacing:.01em}
+.tabs button[aria-pressed="true"]{color:var(--gold)}
+
+/* ---------- question ---------- */
+.qwrap{padding:18px 16px 8px}
+.qmeta{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.badge{font-family:var(--mono);font-size:10.5px;font-weight:700;letter-spacing:.06em;padding:4px 8px;border-radius:6px;background:var(--surface2);color:var(--dim)}
+.badge.d1{color:#7FB2FF;background:#13203A}
+.badge.d2{color:#FF9DB4;background:#361A24}
+.badge.d3{color:#7FE3C8;background:#0F2E2A}
+.badge.d4{color:#E0B6FF;background:#271A38}
+.qtext{font-size:19px;line-height:1.38;font-weight:500;letter-spacing:-.012em;margin:0 0 18px}
+
+.opts{display:flex;flex-direction:column;gap:9px}
+.opt{
+  display:flex;gap:12px;align-items:flex-start;text-align:left;width:100%;
+  background:var(--surface);border:1.5px solid var(--line);border-radius:13px;
+  padding:14px;min-height:56px;transition:border-color .15s,background .15s;
+}
+.opt:active{background:var(--surface2)}
+.ltr{
+  flex:none;width:28px;height:28px;border-radius:8px;border:1.5px solid var(--faint);
+  display:grid;place-items:center;font-family:var(--mono);font-size:13px;font-weight:700;color:var(--dim);
+  transition:all .15s;
+}
+.otx{font-size:15.5px;line-height:1.35;padding-top:3px}
+.opt.sel{border-color:var(--gold);background:var(--gold-dim)}
+.opt.sel .ltr{border-color:var(--gold);background:var(--gold);color:#17120A}
+.opt.right{border-color:var(--ok);background:var(--ok-dim)}
+.opt.right .ltr{border-color:var(--ok);background:var(--ok);color:#06180F}
+.opt.wrong{border-color:var(--bad);background:var(--bad-dim)}
+.opt.wrong .ltr{border-color:var(--bad);background:var(--bad);color:#2A0A0C}
+.locked .opt{pointer-events:none}
+
+.expl{margin-top:16px;border-radius:13px;padding:14px;border:1px solid var(--line);background:var(--surface)}
+.expl .verdict{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:700;margin-bottom:7px}
+.expl.good .verdict{color:var(--ok)} .expl.bad .verdict{color:var(--bad)}
+.expl p{margin:0;font-size:14.5px;line-height:1.5;color:#C9D1DE}
+.expl a{
+  display:inline-flex;align-items:center;gap:6px;margin-top:12px;color:var(--gold);
+  font-size:14px;font-weight:600;text-decoration:none;border:1px solid var(--gold-dim);
+  background:#1A1408;border-radius:10px;padding:10px 12px;
+}
+
+/* ---------- bottom action ---------- */
+.actbar{
+  flex:none;padding:10px 16px calc(10px + var(--bot));border-top:1px solid var(--line);
+  background:rgba(10,12,17,.92);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);
+  display:flex;gap:10px;align-items:center;
+}
+.actbar .nav-sm{width:52px;height:50px;flex:none;border-radius:12px;background:var(--surface2);display:grid;place-items:center;font-size:19px;color:var(--dim)}
+.actbar .nav-sm:disabled{opacity:.3}
+.actbar .main{flex:1;height:50px;border-radius:12px;background:var(--gold);color:#17120A;font-weight:700;font-size:16px}
+.actbar .main.dim{background:var(--surface2);color:var(--faint)}
+
+/* ---------- jump sheet ---------- */
+.sheet{position:fixed;inset:0;z-index:60;display:flex;flex-direction:column;justify-content:flex-end;background:rgba(0,0,0,.6)}
+.sheetbody{background:var(--surface);border-radius:20px 20px 0 0;padding:8px 16px calc(20px + var(--bot));max-height:78%;overflow-y:auto;border-top:1px solid var(--line)}
+.handle{width:38px;height:4px;border-radius:2px;background:var(--raise);margin:8px auto 14px}
+.jgrid{display:grid;grid-template-columns:repeat(6,1fr);gap:8px}
+.jt{aspect-ratio:1;border-radius:10px;background:var(--surface2);border:1.5px solid var(--line);font-family:var(--mono);font-size:14px;font-weight:600;color:var(--dim);display:grid;place-items:center}
+.jt.ans{color:var(--ink);border-color:var(--faint)}
+.jt.ok{border-color:var(--ok);color:var(--ok)}
+.jt.no{border-color:var(--bad);color:var(--bad)}
+.jt.now{background:var(--gold);color:#17120A;border-color:var(--gold)}
+
+/* ---------- results ---------- */
+.ring{display:flex;justify-content:center;padding:20px 0 6px}
+.ringwrap{position:relative;width:168px;height:168px}
+.ringwrap svg{transform:rotate(-90deg)}
+.ringtxt{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.ringtxt .big{font-family:var(--mono);font-size:44px;font-weight:700;letter-spacing:-.03em;line-height:1}
+.ringtxt .sm{font-family:var(--mono);font-size:12px;color:var(--dim);margin-top:5px}
+.verdictline{text-align:center;padding:4px 24px 20px;font-size:15px;color:var(--dim)}
+.verdictline strong{color:var(--ink);display:block;font-size:17px;margin-bottom:3px}
+
+.brow{margin-bottom:13px}
+.brow .top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px;gap:10px}
+.brow .nm{font-size:14px;font-weight:600}
+.brow .vl{font-family:var(--mono);font-size:12px;color:var(--dim);flex:none}
+.btrack{height:8px;background:var(--surface2);border-radius:4px;overflow:hidden}
+.bfill{height:100%;border-radius:4px;transition:width .5s}
+
+.rw{display:flex;gap:11px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line);text-decoration:none;color:inherit}
+.rw:last-child{border-bottom:0}
+.rw .code{font-family:var(--mono);font-size:11.5px;font-weight:700;color:var(--bad);background:var(--bad-dim);border-radius:7px;padding:5px 7px;flex:none;min-width:42px;text-align:center}
+.rw .nm{flex:1;font-size:14.5px;line-height:1.3}
+.rw .nm small{display:block;color:var(--faint);font-size:12px;margin-top:1px}
+.rw .go{color:var(--gold);font-size:16px;flex:none}
+.allgood{color:var(--ok);font-size:14.5px;margin:0}
+
+/* ---------- visuals ---------- */
+.vcard{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);margin:0 16px 12px;overflow:hidden}
+.vhead{display:flex;align-items:center;gap:11px;width:100%;padding:15px 16px;text-align:left}
+.vhead .n{font-family:var(--mono);font-size:11px;font-weight:700;color:var(--gold);background:var(--gold-dim);border-radius:6px;padding:4px 7px;flex:none}
+.vhead .t{flex:1;font-size:15.5px;font-weight:600;line-height:1.25}
+.vhead .cv{color:var(--faint);font-size:14px;transition:transform .2s}
+.vhead[aria-expanded="true"] .cv{transform:rotate(90deg)}
+.vbody{padding:0 14px 16px;border-top:1px solid var(--line);margin-top:-1px}
+.vbody svg{width:100%;height:auto;display:block;margin-top:14px}
+.vbody .cap{margin:12px 0 0;font-size:13.5px;color:var(--dim);line-height:1.5}
+.vtable{width:100%;border-collapse:collapse;margin-top:14px;font-size:13.5px}
+.vtable th,.vtable td{padding:9px 6px;border-bottom:1px solid var(--line);text-align:left}
+.vtable th{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);font-weight:600}
+.vtable td.y{color:var(--ok);font-weight:700;text-align:center;width:46px}
+.vtable td.n{color:var(--bad);font-weight:700;text-align:center;width:46px}
+
+.foot{padding:22px 16px 30px;color:var(--faint);font-size:12px;line-height:1.55}
+.foot a{color:var(--dim)}
+.tip{display:flex;gap:9px;align-items:flex-start;background:var(--surface2);border-radius:11px;padding:12px;margin-top:12px;font-size:13px;color:var(--dim);line-height:1.45}
+.tip .i{flex:none;font-size:15px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- ================= HOME ================= -->
+<section class="screen" id="scHome">
+  <div class="scroll">
+    <div class="hero">
+      <p class="kicker">CompTIA A+ · 220-1202</p>
+      <h1>Core 2 Drill</h1>
+      <p class="lede">90 questions weighted to the real domain mix. Answer, get graded, jump straight to the video you need.</p>
+    </div>
+
+    <div class="card resume hide" id="resumeCard">
+      <h2>Pick up where you left off</h2>
+      <p class="note" id="resumeNote"></p>
+      <button class="cta" id="resumeBtn">Resume</button>
+      <button class="cta ghost" id="discardBtn" style="margin-top:8px">Start fresh instead</button>
+    </div>
+
+    <div class="card">
+      <h2>Question set</h2>
+      <p class="note">Each test mirrors the exam's domain weighting.</p>
+      <div class="grid2" id="setGrid"></div>
+    </div>
+
+    <div class="card">
+      <h2>Mode</h2>
+      <div class="seglist" id="modeSeg">
+        <button data-m="study" aria-pressed="true">Study</button>
+        <button data-m="exam" aria-pressed="false">Exam</button>
+      </div>
+      <p class="modenote" id="modeNote"></p>
+      <button class="cta" id="startBtn">Start</button>
+    </div>
+
+    <div class="foot">
+      Questions are original, written to the published CompTIA A+ Core 2 (220-1202) objectives — not actual exam items.
+      Video links go to <a href="https://www.professormesser.com/free-a-plus-training/220-1202/220-1202-video/220-1202-training-course/">Professor Messer's free course</a>.
+      <div class="tip"><span class="i">⌂</span><span><strong style="color:var(--ink)">Add this to your Home Screen.</strong> In Safari tap Share → Add to Home Screen. It then opens full screen with no address bar and works with no signal.</span></div>
+    </div>
+  </div>
+  <nav class="tabs" id="tabbar">
+    <button data-tab="home" aria-pressed="true"><span class="gl">◎</span><span class="lb">Drill</span></button>
+    <button data-tab="visuals" aria-pressed="false"><span class="gl">▤</span><span class="lb">Cheat Sheets</span></button>
+  </nav>
+</section>
+
+<!-- ================= QUIZ ================= -->
+<section class="screen hide" id="scQuiz">
+  <header class="nav">
+    <div class="line">
+      <button class="iconbtn" id="closeQuiz" aria-label="Close">✕</button>
+      <span class="ttl" id="quizTitle">Test 1</span>
+      <span class="spacer"></span>
+      <span class="mono" id="clock">00:00</span>
+      <button class="iconbtn" id="jumpBtn" aria-label="Jump to question">⠿</button>
+    </div>
+    <div class="rail" id="rail"></div>
+  </header>
+  <div class="scroll" id="qScroll">
+    <div class="qwrap">
+      <div class="qmeta">
+        <span class="badge" id="qNum">01 / 30</span>
+        <span class="badge" id="qDom">1.0</span>
+        <span class="badge" id="qObj">Obj 1.1</span>
+      </div>
+      <p class="qtext" id="qText"></p>
+      <div class="opts" id="qOpts"></div>
+      <div id="qExpl"></div>
+    </div>
+  </div>
+  <div class="actbar">
+    <button class="nav-sm" id="prevBtn" aria-label="Previous">‹</button>
+    <button class="main" id="nextBtn">Next</button>
+  </div>
+</section>
+
+<!-- ================= RESULTS ================= -->
+<section class="screen hide" id="scRes">
+  <header class="nav">
+    <div class="line">
+      <button class="iconbtn" id="closeRes" aria-label="Close">✕</button>
+      <span class="ttl">Results</span>
+      <span class="spacer"></span>
+      <span class="mono" id="resTime"></span>
+    </div>
+  </header>
+  <div class="scroll">
+    <div class="ring">
+      <div class="ringwrap">
+        <svg viewBox="0 0 168 168" width="168" height="168">
+          <circle cx="84" cy="84" r="72" fill="none" stroke="#1D222D" stroke-width="13"/>
+          <circle id="ringArc" cx="84" cy="84" r="72" fill="none" stroke="#35D08A" stroke-width="13"
+                  stroke-linecap="round" stroke-dasharray="452.4" stroke-dashoffset="452.4"
+                  style="transition:stroke-dashoffset .9s ease"/>
+        </svg>
+        <div class="ringtxt"><span class="big" id="resPct">0%</span><span class="sm" id="resFrac"></span></div>
+      </div>
+    </div>
+    <p class="verdictline" id="resVerdict"></p>
+
+    <div class="card">
+      <h2>By domain</h2>
+      <p class="note">Weakest first. Under 75% needs another pass.</p>
+      <div id="resBars"></div>
+    </div>
+
+    <div class="card">
+      <h2>Rewatch list</h2>
+      <p class="note">Most-missed objective first. Tap to open the video.</p>
+      <div id="resWatch"></div>
+    </div>
+
+    <div class="card" style="background:none;border:0;padding:0">
+      <button class="cta" id="retryMissed">Retry what I missed</button>
+      <button class="cta ghost" id="reviewAll" style="margin-top:9px">Review all answers</button>
+      <button class="cta ghost" id="backHome" style="margin-top:9px">Done</button>
+    </div>
+    <div style="height:24px"></div>
+  </div>
+</section>
+
+<!-- ================= VISUALS ================= -->
+<section class="screen hide" id="scVis">
+  <div class="scroll">
+    <div class="hero" style="padding-bottom:10px">
+      <p class="kicker">Visual recall</p>
+      <h1 style="font-size:28px">Cheat Sheets</h1>
+      <p class="lede">The pure-memorization items, drawn. These are the ones that cost people the exam.</p>
+    </div>
+    <div id="visList"></div>
+    <div style="height:14px"></div>
+  </div>
+  <nav class="tabs" id="tabbar2">
+    <button data-tab="home" aria-pressed="false"><span class="gl">◎</span><span class="lb">Drill</span></button>
+    <button data-tab="visuals" aria-pressed="true"><span class="gl">▤</span><span class="lb">Cheat Sheets</span></button>
+  </nav>
+</section>
+
+<!-- ================= JUMP SHEET ================= -->
+<div class="sheet hide" id="sheet">
+  <div class="sheetbody">
+    <div class="handle"></div>
+    <div class="jgrid" id="jgrid"></div>
+    <button class="cta ghost" id="sheetClose" style="margin-top:16px">Close</button>
+  </div>
+</div>
+
+</div>
+<script>
+var DATA = {"tests":[{"name":"Test 1","questions":[{"d":"1.0","o":"1.1","q":"A technician must format a 128 GB USB flash drive so it can hold single video files larger than 4 GB and be fully readable and writable on both Windows and macOS. Which file system should be used?","c":["ext4","FAT32","NTFS","exFAT"],"a":3,"e":"exFAT is designed for removable media, has no practical 4 GB file-size limit, and is natively read/write on both Windows and macOS. FAT32 caps individual files at 4 GB. NTFS is read-only on macOS without third-party drivers. ext4 is a Linux file system."},{"d":"1.0","o":"1.3","q":"A user's new laptop must be joined to the company Active Directory domain. Which is the MINIMUM Windows 11 edition that supports this?","c":["Windows 11 Enterprise","Windows 11 Education","Windows 11 Home","Windows 11 Pro"],"a":3,"e":"Domain join starts at the Pro edition. Home cannot join a domain, and it also lacks BitLocker, Group Policy Editor, and hosting Remote Desktop. Enterprise and Education support it too, but Pro is the minimum."},{"d":"1.0","o":"1.5","q":"A technician needs to view all active TCP connections and the ports a Windows workstation is listening on. Which command should be used?","c":["ipconfig","netstat","nslookup","net use"],"a":1,"e":"netstat displays active connections and listening ports (netstat -a -n -b for more detail). ipconfig shows IP configuration, nslookup queries DNS, and net use maps network drives."},{"d":"1.0","o":"1.4","q":"A Windows workstation is low on drive space. The technician wants to remove temporary internet files, downloaded update files, and the recycle bin contents using a built-in tool. Which utility is BEST?","c":["defrag","Disk Cleanup (cleanmgr)","diskpart","Resource Monitor"],"a":1,"e":"Disk Cleanup (cleanmgr) is purpose-built for reclaiming space from temp files, update caches, and the recycle bin. defrag reorganizes file placement, diskpart manages partitions, and Resource Monitor only reports usage."},{"d":"1.0","o":"1.8","q":"Which macOS feature securely stores a user's passwords, certificates, and secure notes?","c":["Spotlight","Mission Control","Keychain","Time Machine"],"a":2,"e":"Keychain is macOS's encrypted credential store. Spotlight is search, Mission Control manages windows and Spaces, and Time Machine handles versioned backups."},{"d":"1.0","o":"1.9","q":"A Linux administrator needs a shell script to be readable, writable, and executable by the owner, and readable and executable by the group and everyone else. Which command accomplishes this?","c":["chmod 755 script.sh","chmod 644 script.sh","chown 755 script.sh","chmod 777 script.sh"],"a":0,"e":"In numeric mode, read=4, write=2, execute=1. Owner rwx = 7, group r-x = 5, other r-x = 5, so 755. 644 removes execute entirely, 777 gives everyone write access, and chown changes ownership rather than permissions."},{"d":"1.0","o":"1.2","q":"A company is deploying 200 identical laptops directly to remote employees. No technician will physically touch the devices, and each must configure itself on first power-on. Which deployment method is BEST?","c":["Clean install from USB media","In-place upgrade","Zero-touch deployment","Repair installation"],"a":2,"e":"Zero-touch deployment provisions devices automatically over the network on first boot with no technician interaction, which is exactly the scenario described. All other options require someone to physically run the process."},{"d":"1.0","o":"1.2","q":"A technician is preparing a 6 TB drive that requires six primary partitions. Which partition style must be used?","c":["GPT","FAT32","Dynamic disk","MBR"],"a":0,"e":"MBR is limited to 2 TB and four primary partitions. GPT supports far larger drives and up to 128 partitions. FAT32 is a file system, not a partition style, and dynamic disks address volume spanning, not the 2 TB limit."},{"d":"2.0","o":"2.5","q":"An accounts payable clerk receives an urgent email that appears to be from the CFO requesting an immediate wire transfer to a new vendor account. The email address is subtly misspelled. Which attack is this?","c":["Evil twin","Business email compromise","Denial of service","SQL injection"],"a":1,"e":"A business email compromise impersonates a trusted internal executive or partner to authorize a fraudulent financial transaction. The urgency, financial request, and lookalike sender address are classic BEC indicators."},{"d":"2.0","o":"2.5","q":"An attacker sets up a rogue wireless access point broadcasting the same SSID as the corporate network to capture user traffic. What is this attack called?","c":["Evil twin","Rootkit","Tailgating","On-path attack"],"a":0,"e":"An evil twin is a rogue AP that duplicates a legitimate SSID so clients associate with it. It is often the delivery mechanism for a follow-on on-path attack, but the rogue AP itself is the evil twin."},{"d":"2.0","o":"2.3","q":"Which wireless security standard uses Simultaneous Authentication of Equals (SAE) to protect the key exchange?","c":["WPA2","WPA3","WEP","WPA"],"a":1,"e":"WPA3 replaces the WPA2 pre-shared key handshake with SAE, which prevents an attacker from capturing the handshake and brute-forcing it offline. WEP, WPA, and WPA2 do not use SAE."},{"d":"2.0","o":"2.4","q":"A user's documents have been encrypted, and a full-screen message demands cryptocurrency payment for the decryption key. Which malware type is this?","c":["Spyware","Rootkit","Keylogger","Ransomware"],"a":3,"e":"Ransomware encrypts data and extorts payment for the key. A rootkit hides at the kernel level, a keylogger records keystrokes, and spyware gathers information covertly — none of which encrypt files for extortion."},{"d":"2.0","o":"2.6","q":"A technician is following the malware removal process. After investigating and verifying the malware symptoms, what is the NEXT step?","c":["Enable System Restore and create a restore point","Schedule scans and run updates","Educate the end user","Quarantine the infected system"],"a":3,"e":"The order is: investigate and verify, quarantine, disable System Restore, remediate, schedule scans and updates, re-enable System Restore and create a restore point, then educate the end user. Quarantine comes second so the infection cannot spread while you work."},{"d":"2.0","o":"2.2","q":"A file server administrator needs permissions that apply both when a user sits at the server console and when the user connects across the network. Which permission type must be configured?","c":["Group Policy preferences","Inherited share permissions","Share permissions","NTFS permissions"],"a":3,"e":"NTFS permissions apply to local and network access. Share permissions only take effect over the network. When both are set, the most restrictive of the two wins for network access."},{"d":"2.0","o":"2.9","q":"A hospital is retiring 400 drives containing patient records and must provide auditors with documented proof the data cannot be recovered. Which approach is BEST?","c":["Use a certified shredding service and obtain a certificate of destruction","Perform a standard format on each drive","Quick format each drive","Delete all partitions and reinstall the OS"],"a":0,"e":"Only physical destruction by a certified vendor produces the certificate of destruction the auditors require. Quick formats, partition deletion, and standard formats leave data recoverable or produce no auditable documentation."},{"d":"2.0","o":"2.3","q":"Which authentication protocol provides mutual authentication using tickets issued by a Key Distribution Center?","c":["LDAP","RADIUS","TACACS+","Kerberos"],"a":3,"e":"Kerberos uses a KDC to issue ticket-granting tickets and service tickets, providing mutual authentication and single sign-on. RADIUS and TACACS+ are AAA protocols, and LDAP is a directory access protocol."},{"d":"3.0","o":"3.1","q":"A Windows workstation began producing a blue screen stop error on every boot immediately after a new video driver was installed. What is the BEST first action?","c":["Perform a clean install of Windows","Boot into Safe Mode and roll back the driver","Replace the video card","Run chkdsk /f"],"a":1,"e":"The failure correlates directly with a known change, so reverse the change. Safe Mode loads a generic display driver, allowing a rollback in Device Manager. Reinstalling Windows or swapping hardware are far more disruptive and unnecessary."},{"d":"3.0","o":"3.2","q":"A user reports rapid battery drain and an unusually warm phone that began immediately after installing a new third-party app. What should the technician do FIRST?","c":["Disable Bluetooth","Replace the battery","Uninstall the recently installed app","Perform a factory reset"],"a":2,"e":"Symptoms started right after a specific change, so remove that change first. A factory reset is a last resort, and a battery replacement is unwarranted when the battery was fine yesterday."},{"d":"3.0","o":"3.4","q":"A user's browser homepage keeps reverting to an unfamiliar search site and pop-up ads appear on every page. Which is the MOST likely cause?","c":["A disabled Windows Firewall","An expired TLS certificate","A malicious browser extension or adware infection","An incorrect DNS server address"],"a":2,"e":"Homepage hijacking plus persistent pop-ups is the signature of adware or a rogue browser extension. Certificate problems produce warnings, DNS errors cause resolution failures, and a disabled firewall alone does not change browser settings."},{"d":"3.0","o":"3.1","q":"Applications on a Windows workstation are extremely slow. Task Manager shows memory at 98% with continuous heavy disk activity. What is the MOST likely cause?","c":["Insufficient RAM causing excessive paging to disk","A corrupted user profile","An incorrect system time zone","A failing network adapter"],"a":0,"e":"When physical memory is exhausted, Windows pages heavily to the page file, which produces exactly this combination of high memory usage, constant disk activity, and sluggishness. The other options do not cause sustained memory pressure."},{"d":"3.0","o":"3.4","q":"A single workstation displays certificate warnings on every HTTPS site, while all other workstations connect normally. What should the technician check FIRST?","c":["The browser cache","The system date and time","The DNS server address","The outbound firewall rules"],"a":1,"e":"An incorrect system clock makes valid certificates appear expired or not yet valid. Because only one machine is affected, a local setting is the likely culprit, and date/time is the fastest, most common fix."},{"d":"3.0","o":"3.1","q":"A Windows computer will not boot and Safe Mode is inaccessible. Which environment should the technician use to run Startup Repair and access a command prompt?","c":["regedit","msconfig","Windows Recovery Environment (WinRE)","Task Manager"],"a":2,"e":"WinRE boots outside the installed OS and provides Startup Repair, System Restore, a command prompt, and reset options. The other tools all require a working Windows session."},{"d":"3.0","o":"3.3","q":"A corporate phone shows severely degraded performance, apps behaving unexpectedly, and data usage far above the user's normal pattern. Which is the MOST likely cause?","c":["The screen protector is interfering with the digitizer","Bluetooth is enabled","Airplane mode was left on","The device has been rooted/jailbroken or has a malicious app installed"],"a":3,"e":"Sluggishness combined with unexpected app behavior and a spike in network traffic points to malware or an unauthorized OS modification. Bluetooth and screen protectors do not generate data usage, and airplane mode would eliminate it entirely."},{"d":"4.0","o":"4.3","q":"Which backup type copies all data changed since the last FULL backup and does not clear the archive bit?","c":["Incremental","Differential","Synthetic full","Full"],"a":1,"e":"A differential backup captures everything changed since the last full backup and leaves the archive bit set, so each differential grows larger but a restore needs only the full plus the most recent differential. Incremental backups clear the archive bit and require every incremental in the chain."},{"d":"4.0","o":"4.3","q":"Which statement correctly describes the 3-2-1 backup rule?","c":["Three backups, two tape drives, one administrator","Three copies of the data, on two different media types, with one copy stored off-site","Three full backups weekly, two incrementals, one differential","Three servers, two data centers, one cloud provider"],"a":1,"e":"3-2-1 means three total copies of the data, stored on two different types of media, with at least one copy kept off-site to survive a site-level disaster."},{"d":"4.0","o":"4.2","q":"An approved change has been implemented, but users immediately begin reporting application failures. Which element of the change management plan should now be executed?","c":["Risk analysis","Scope of the change","The rollback plan","End-user acceptance"],"a":2,"e":"The rollback (backout) plan returns systems to their prior working state when a change fails. Risk analysis and scoping happen before implementation, and end-user acceptance is part of the approval process."},{"d":"4.0","o":"4.1","q":"Which document defines the guaranteed uptime and response times a service provider must deliver to a customer?","c":["NDA","AUP","SLA","MSDS"],"a":2,"e":"A service level agreement specifies measurable service commitments such as uptime and response times. An AUP governs acceptable use of company technology, an MSDS covers chemical safety, and an NDA covers confidentiality."},{"d":"4.0","o":"4.4","q":"A technician is about to install RAM in a desktop workstation. Which practice BEST prevents electrostatic discharge damage?","c":["Wear an anti-static wrist strap connected to the chassis","Work on a carpeted surface for cushioning","Keep the room humidity below 20 percent","Wear rubber gloves while handling components"],"a":0,"e":"An anti-static wrist strap bonded to the chassis equalizes potential between the technician and the equipment, so no discharge occurs. Carpet generates static, low humidity increases static buildup, and rubber gloves insulate rather than equalize."},{"d":"4.0","o":"4.5","q":"Where should a technician look for safe handling, storage, and disposal instructions for a chemical cleaning solvent used in the server room?","c":["The MSDS/SDS","The EULA","The AUP","The SLA"],"a":0,"e":"A material safety data sheet (also called a safety data sheet) documents hazards, handling precautions, first aid, and disposal requirements for a chemical product."},{"d":"4.0","o":"4.7","q":"A technician arrives at a user's desk to fix a reported issue, but the user is in the middle of a phone call. What is the MOST professional action?","c":["Wait for the user to finish the call before beginning work","Start working on the computer without speaking to the user","Leave and reschedule the visit for the following week","Interrupt briefly to explain what you plan to do"],"a":0,"e":"Avoiding distractions and not interrupting the customer are explicit professionalism expectations. Waiting respects the user's time; interrupting, working silently without acknowledgment, or abandoning the ticket are all inappropriate."}]},{"name":"Test 2","questions":[{"d":"1.0","o":"1.4","q":"A technician needs to review application, security, and system logs to investigate an error that occurred overnight. Which tool should be used?","c":["Task Manager","Event Viewer","Performance Monitor","Resource Monitor"],"a":1,"e":"Event Viewer stores historical Application, Security, Setup, and System logs, so it can show what happened while nobody was watching. The other three tools display real-time or recent-session activity only."},{"d":"1.0","o":"1.5","q":"Which command maps the network share \\\\server\\data to drive letter S: from the Windows command line?","c":["netstat -S \\\\server\\data","net view \\\\server","net use S: \\\\server\\data","net user S: \\\\server\\data"],"a":2,"e":"net use assigns a drive letter to a UNC path. net view lists shared resources on a host, net user manages user accounts, and netstat reports connections."},{"d":"1.0","o":"1.3","q":"A company wants full-drive encryption on all corporate Windows laptops using only built-in Windows functionality. Which feature and edition combination is correct?","c":["FileVault on Windows Pro","Defender Antivirus on Windows Home","EFS on Windows Home","BitLocker on Windows Pro"],"a":3,"e":"BitLocker provides full volume encryption and requires Pro or higher. EFS encrypts individual files rather than the whole drive and is not available in Home. FileVault is macOS, and Defender is antivirus, not encryption."},{"d":"1.0","o":"1.9","q":"Which Linux command displays real-time CPU and memory consumption broken down by running process?","c":["dig","ls","grep","top"],"a":3,"e":"top provides a live, continuously refreshing view of process resource usage. ls lists directory contents, grep searches text, and dig performs DNS lookups."},{"d":"1.0","o":"1.4","q":"A user complains that a third-party utility launches every time Windows boots and slows login. Which is the FASTEST built-in way to stop it from starting automatically?","c":["Disk Management","Event Viewer","Device Manager","The Startup apps tab in Task Manager"],"a":3,"e":"Task Manager's Startup tab lists auto-start programs with their startup impact and allows them to be disabled in one click. Device Manager handles hardware, Disk Management handles volumes, and Event Viewer only shows logs."},{"d":"1.0","o":"1.8","q":"A Mac user wants automated, versioned backups to an external drive so individual older file versions can be recovered. Which feature should be configured?","c":["Boot Camp","Time Machine","Mission Control","Spotlight"],"a":1,"e":"Time Machine performs scheduled incremental backups and lets users browse and restore previous versions of files. Mission Control manages desktops, Spotlight is search, and Boot Camp installs Windows on a Mac."},{"d":"1.0","o":"1.11","q":"An organization wants shared mail, documents, and calendars for all staff without deploying or maintaining on-premises servers. Which describes this approach?","c":["On-premises domain services","Zero-touch deployment","A cloud-based productivity and collaboration suite","Workgroup networking"],"a":2,"e":"Cloud productivity suites deliver mail, file storage, and collaboration as a subscription service with no local server infrastructure. Zero-touch deployment provisions endpoints, and workgroups and domain services are local networking models."},{"d":"1.0","o":"1.7","q":"A Windows workstation cannot reach any network resource. ipconfig reports an IPv4 address of 169.254.14.22. What is the MOST likely cause?","c":["The proxy server settings are wrong","A static IP address was entered incorrectly","The client could not reach a DHCP server and self-assigned an APIPA address","The DNS server is offline"],"a":2,"e":"The 169.254.x.x range is APIPA, which Windows assigns only when no DHCP server responds. A DNS failure would still leave a routable IP, and proxy or static-IP problems produce different symptoms."},{"d":"2.0","o":"2.5","q":"An attacker uses ARP poisoning to place themselves between a workstation and the default gateway so all traffic passes through the attacker's system. Which attack is this?","c":["Distributed denial of service","Insider threat","On-path attack","Zero-day attack"],"a":2,"e":"An on-path attack (formerly man-in-the-middle) intercepts and potentially modifies traffic between two hosts, and ARP poisoning is the classic method on a local segment."},{"d":"2.0","o":"2.5","q":"An attacker enters database commands into a web application's login form and retrieves the entire user table. Which attack occurred?","c":["Cross-site scripting","SQL injection","Brute force","MAC spoofing"],"a":1,"e":"SQL injection inserts database queries through unsanitized application input to read or modify the back-end database. Cross-site scripting injects browser-executed script, not database commands."},{"d":"2.0","o":"2.1","q":"Which physical security control is specifically designed to prevent tailgating by admitting only one person at a time?","c":["An access control vestibule","A badge reader","Video surveillance","Bollards"],"a":0,"e":"An access control vestibule (mantrap) uses interlocking doors so a second person cannot follow an authorized person through. Bollards stop vehicles, badge readers authenticate but do not control how many people pass, and cameras only record."},{"d":"2.0","o":"2.1","q":"A company wants logins to require something the user knows plus something the user has. Which implementation BEST meets this requirement?","c":["A username plus a password","A longer, more complex password","A password plus a hardware token or authenticator app code","Two separate passwords entered in sequence"],"a":2,"e":"A password is something you know; a token or authenticator app is something you have. Two passwords are two instances of the same factor and do not constitute multifactor authentication."},{"d":"2.0","o":"2.1","q":"Which security principle states that users should be granted only the minimum rights required to perform their job duties?","c":["Least privilege","Defense in depth","Implicit deny","Zero trust"],"a":0,"e":"Least privilege limits each account's permissions to what the role requires. Zero trust removes implicit trust from the network location, defense in depth layers controls, and implicit deny blocks anything not explicitly allowed."},{"d":"2.0","o":"2.10","q":"A technician is deploying a new SOHO wireless router. Which single action provides the GREATEST immediate security improvement?","c":["Enable UPnP","Enable WPS for easier client onboarding","Disable SSID broadcast","Change the default administrator credentials"],"a":3,"e":"Default admin credentials are published online and are the first thing an attacker tries. Hiding the SSID is trivially bypassed, and UPnP and WPS both introduce well-known vulnerabilities rather than reducing risk."},{"d":"2.0","o":"2.5","q":"Attackers are actively exploiting a software flaw for which the vendor has not yet released a patch. What is this called?","c":["A zero-day attack","An insider threat","An on-path attack","A supply chain attack"],"a":0,"e":"A zero-day exploits a vulnerability that is unknown to, or unpatched by, the vendor, so signature-based defenses and patching cannot yet stop it."},{"d":"2.0","o":"2.8","q":"An employee's corporate smartphone is lost in an airport. Which control allows an administrator to erase all corporate data from the device?","c":["Screen lock","Remote wipe","Full device encryption","Failed-attempt lockout"],"a":1,"e":"Remote wipe issues a command over the network to erase the device. Screen locks, encryption, and lockout thresholds protect data on the device but do not remove it."},{"d":"3.0","o":"3.1","q":"A Windows application crashes at launch, and Event Viewer logs a missing DLL error for that application. What is the BEST first step?","c":["Repair or reinstall the affected application","Replace the system drive","Roll back the system BIOS","Reinstall Windows"],"a":0,"e":"A missing DLL that belongs to one application is almost always fixed by repairing or reinstalling that application, which restores its dependencies. The other options are disproportionate to a single-application fault."},{"d":"3.0","o":"3.2","q":"An Android phone repeatedly fails to install the latest OS update. What should the technician check FIRST?","c":["Available storage space, battery level, and network connectivity","The SIM card seating","The screen protector","Bluetooth pairing history"],"a":0,"e":"OS updates require sufficient free storage, adequate battery, and a stable connection; failing any of these is the most common cause of a failed update. The other items have no bearing on the update process."},{"d":"3.0","o":"3.4","q":"Several workstations display a full-screen warning claiming the system is severely infected and instructing the user to call a toll-free support number. What is this MOST likely?","c":["A kernel stop error","A legitimate antivirus detection","A rogue antivirus / fake security alert","A Windows Update notification"],"a":2,"e":"Fake security alerts that demand a phone call are a social engineering scam. Legitimate antivirus software quarantines threats and never instructs users to call an outside number."},{"d":"3.0","o":"3.1","q":"A Windows workstation reboots at random times. Event Viewer shows repeated Kernel-Power critical events. Which is the MOST likely cause?","c":["A corrupted user profile","A power supply, overheating, or other hardware fault","A missing application DLL","An incorrect DNS server entry"],"a":1,"e":"Kernel-Power critical events indicate the system lost power or shut down uncleanly, which points to a failing PSU, thermal shutdown, or loose power connection rather than a software or network setting."},{"d":"3.0","o":"3.4","q":"A Windows feature update fails repeatedly with the same error code. Which action should the technician take to resolve it?","c":["Reinstall the display driver","Reset the BIOS to defaults","Permanently disable the firewall","Run the Windows Update troubleshooter and clear the SoftwareDistribution cache"],"a":3,"e":"Corrupted files in the update cache are a frequent cause of repeated update failures; the troubleshooter and clearing SoftwareDistribution force a clean re-download. Disabling the firewall permanently creates a security problem without addressing the fault."},{"d":"3.0","o":"3.4","q":"A user reports that personal files have been renamed with unfamiliar extensions and new icons have appeared on the desktop. Which is the MOST likely cause?","c":["A failed printer driver installation","A weak Wi-Fi signal","Low free disk space","A malware infection"],"a":3,"e":"Altered or renamed personal files together with unexpected desktop changes are documented indicators of a malware compromise and should trigger the malware removal process."},{"d":"3.0","o":"3.3","q":"A corporate phone shows a sharp increase in data usage and several unfamiliar applications the user did not install. Which response is BEST?","c":["Uninstall the unknown apps, run mobile anti-malware, and factory reset if symptoms persist","Disable Wi-Fi and use cellular only","Replace the SIM card","Increase the user's data plan allowance"],"a":0,"e":"Unknown apps plus abnormal traffic indicate a compromise, so remove the apps, scan the device, and escalate to a factory reset if the behavior continues. Raising the data cap or swapping the SIM hides the symptom without removing the cause."},{"d":"4.0","o":"4.1","q":"Which document should a new employee review and sign to establish what constitutes appropriate use of company computers, network, and email?","c":["Chain of custody form","Acceptable use policy (AUP)","Service level agreement (SLA)","Material safety data sheet (MSDS)"],"a":1,"e":"An acceptable use policy defines permitted and prohibited use of company technology resources. An SLA governs service commitments, an MSDS covers chemical hazards, and a chain of custody form tracks evidence."},{"d":"4.0","o":"4.6","q":"During a security incident investigation, a technician must document every person who handled a seized drive and when. What is this documentation called?","c":["Chain of custody","Change control record","Asset tag register","Order of volatility"],"a":0,"e":"Chain of custody documents the possession and handling of evidence from collection through disposition so it remains admissible. Order of volatility dictates the sequence in which evidence is collected, not who handled it."},{"d":"4.0","o":"4.8","q":"Which file extension identifies a Windows PowerShell script?","c":[".bat",".ps1",".sh",".vbs"],"a":1,"e":".ps1 is the PowerShell script extension. .bat is a legacy Windows batch file, .sh is a Linux/Unix shell script, and .vbs is VBScript."},{"d":"4.0","o":"4.9","q":"A help desk technician needs to take control of a Windows workstation's desktop across the internal corporate network. Which protocol is designed for this?","c":["FTP","SSH","RDP","SMTP"],"a":2,"e":"Remote Desktop Protocol provides full graphical remote control of a Windows desktop over TCP port 3389. SSH provides encrypted command-line access, SMTP sends mail, and FTP transfers files."},{"d":"4.0","o":"4.1","q":"What is the PRIMARY purpose of a configuration management database (CMDB)?","c":["To filter prohibited web content","To track configuration items, their attributes, and the relationships between assets","To store user account passwords securely","To schedule and verify nightly backups"],"a":1,"e":"A CMDB inventories configuration items and maps how they relate to one another, which supports asset management, change management, and impact analysis."},{"d":"4.0","o":"4.5","q":"What is the correct disposal method for a swollen lithium-ion laptop battery?","c":["Recycle it through an approved battery or e-waste program per local regulations","Incinerate it in a controlled fire","Store it indefinitely in a supply closet","Place it in regular office trash"],"a":0,"e":"Lithium-ion batteries are hazardous waste and must go to an approved recycling or disposal program. Trash disposal and incineration are unsafe and frequently illegal, and indefinite storage of a swollen cell is a fire risk."},{"d":"4.0","o":"4.10","q":"A technician troubleshooting a ticket pastes a customer's full name, home address, and account number into a free public AI chatbot to help draft a response. What is the PRIMARY concern?","c":["The AI may use inconsistent regional spelling","The cost of the AI subscription","The AI may respond more slowly than expected","Confidential customer data may be retained or exposed by the third-party AI service"],"a":3,"e":"Public AI services may log, retain, or use submitted content, so entering PII creates a data privacy and compliance exposure. Private or approved enterprise AI implementations exist precisely to address this risk."}]},{"name":"Test 3","questions":[{"d":"1.0","o":"1.1","q":"Which file system is native to current versions of macOS?","c":["NTFS","ext4","APFS","exFAT"],"a":2,"e":"Apple File System (APFS) is the default on modern macOS, optimized for SSDs with snapshots and native encryption. NTFS is Windows, ext4 is Linux, and exFAT is a cross-platform removable-media format."},{"d":"1.0","o":"1.5","q":"A domain workstation is not receiving a newly published Group Policy setting. Which command forces an immediate policy refresh?","c":["gpresult /r","gpupdate /force","sfc /scannow","net user /domain"],"a":1,"e":"gpupdate /force reapplies all Group Policy settings immediately. gpresult /r only reports which policies are currently applied, and the others are unrelated to policy processing."},{"d":"1.0","o":"1.5","q":"Which Windows command scans protected operating system files and repairs corrupted versions from a cached copy?","c":["sfc /scannow","diskpart","format","chkdsk"],"a":0,"e":"System File Checker (sfc /scannow) verifies and repairs protected system files. chkdsk checks file system and disk structure, diskpart manages partitions, and format erases a volume."},{"d":"1.0","o":"1.4","q":"A standard user needs to run a command that modifies system-wide settings. What must happen for the command to succeed?","c":["The user must log off and back on","The command prompt must be run as administrator","The system must be restarted into Safe Mode","User Account Control must be permanently disabled"],"a":1,"e":"Administrative commands require an elevated session, which is what Run as administrator provides. Permanently disabling UAC is a poor security practice and is not the correct way to obtain elevation."},{"d":"1.0","o":"1.4","q":"Which Windows utility is used to initialize a new drive, create and delete partitions, and extend an existing volume?","c":["Device Manager","Disk Management","Task Scheduler","Performance Monitor"],"a":1,"e":"Disk Management (diskmgmt.msc) handles initialization, partitioning, formatting, drive letters, and volume resizing. Device Manager manages hardware drivers rather than volumes."},{"d":"1.0","o":"1.8","q":"Which macOS feature provides fast system-wide searching of files, applications, and documents?","c":["Keychain","Finder","Spotlight","Dock"],"a":2,"e":"Spotlight indexes the system and returns instant results for files, apps, and content. Finder is the file browser, the Dock launches applications, and Keychain stores credentials."},{"d":"1.0","o":"1.7","q":"A remote employee needs an encrypted connection from home into the corporate network so internal resources appear local. What should be configured?","c":["A metered connection","A proxy server","A VPN connection","A workgroup"],"a":2,"e":"A VPN creates an encrypted tunnel across the public internet into the corporate network. A proxy only relays specific application traffic, workgroups are a local sharing model, and metered connections limit data usage."},{"d":"1.0","o":"1.10","q":"An application's requirements specify a 64-bit operating system. The target workstation runs a 32-bit version of Windows with 16 GB of RAM installed. What will occur?","c":["The application will install and run normally","The application will not install because the OS architecture is incompatible","The application will install but run in compatibility mode","Windows will automatically convert itself to 64-bit"],"a":1,"e":"A 64-bit application cannot run on a 32-bit OS regardless of installed RAM, and a 32-bit Windows install cannot address more than roughly 4 GB anyway. Changing architecture requires a clean install of 64-bit Windows."},{"d":"2.0","o":"2.5","q":"An attacker recovers discarded network diagrams and password lists from a company's trash bin. Which technique is this?","c":["Whaling","Shoulder surfing","Dumpster diving","Tailgating"],"a":2,"e":"Dumpster diving is the retrieval of sensitive information from discarded materials, which is why shredding is a required disposal control."},{"d":"2.0","o":"2.5","q":"A targeted phishing email is crafted specifically for a company's chief executive officer. This attack is BEST described as:","c":["Vishing","Whaling","Smishing","Pharming"],"a":1,"e":"Whaling is spear phishing aimed at high-value executives. Vishing uses voice calls, smishing uses SMS, and pharming redirects users to a fraudulent site via DNS manipulation."},{"d":"2.0","o":"2.3","q":"Which encryption standard is used by WPA2 to protect wireless traffic?","c":["RC4","DES","TKIP","AES with CCMP"],"a":3,"e":"WPA2 mandates AES encryption using CCMP. TKIP with RC4 was the WPA-era stopgap and is deprecated, and DES is not used in 802.11 security."},{"d":"2.0","o":"2.1","q":"Which security model assumes no user or device is trusted by default and verifies every request regardless of its network location?","c":["Zero trust","Least privilege","Discretionary access control","Implicit allow"],"a":0,"e":"Zero trust removes the assumption that being inside the network perimeter confers trust, requiring continuous verification of every access request."},{"d":"2.0","o":"2.10","q":"A company needs to prevent employees from reaching gambling and streaming sites from the corporate network. Which control should be implemented?","c":["Port forwarding","DHCP reservations","UPnP","Content filtering"],"a":3,"e":"Content filtering blocks web traffic by category or URL. Port forwarding exposes internal services, DHCP reservations assign fixed addresses, and UPnP allows applications to open ports automatically."},{"d":"2.0","o":"2.4","q":"Malware has embedded itself deep in the operating system kernel, conceals its own presence from the OS, and loads before Windows starts. Which type is this?","c":["Trojan","Rootkit","Adware","Worm"],"a":1,"e":"A rootkit modifies the kernel or boot process to hide itself and often survives normal antivirus scanning, which is why boot-time or offline scanning is required. Adware displays ads, worms self-propagate, and Trojans masquerade as legitimate software."},{"d":"2.0","o":"2.5","q":"An organization is compromised after malicious code is inserted into a routine software update from a trusted vendor. Which attack type is this?","c":["A supply chain attack","An insider threat","Cross-site scripting","A brute force attack"],"a":0,"e":"A supply chain attack compromises a trusted vendor, provider, or component so the malicious payload arrives through a channel the victim already trusts."},{"d":"2.0","o":"2.11","q":"A user wants to install a browser add-on that blocks advertisements. Which practice is MOST secure?","c":["Disable browser updates after installing so the extension is not removed","Install it while using private browsing mode","Install it from whichever site offers the fastest download","Install only from the browser's official extension store and verify the publisher and permissions"],"a":3,"e":"Official extension stores vet publishers and provide update channels, and reviewing requested permissions catches over-privileged add-ons. Private browsing and disabling updates provide no protection and disabling updates actively increases risk."},{"d":"3.0","o":"3.1","q":"After a power outage, a workstation displays 'No operating system found' at boot. What should the technician check FIRST?","c":["The UEFI/BIOS boot order and whether the drive is detected","The display driver version","The DNS server configuration","The antivirus definition date"],"a":0,"e":"Start with whether firmware can see and select the boot device; an outage can reset boot order or leave a drive undetected. Driver, DNS, and antivirus settings are irrelevant before the OS loads."},{"d":"3.0","o":"3.1","q":"Windows displays repeated low-memory warnings and applications close unexpectedly during normal daily use. Which action MOST directly resolves the underlying problem?","c":["Add physical RAM and close unnecessary background applications","Defragment the SSD","Reset the browser to default settings","Increase the page file size only"],"a":0,"e":"Low-memory warnings mean demand exceeds installed RAM, so adding memory and reducing background load addresses the cause. Enlarging the page file only trades speed for capacity, and defragmenting an SSD provides no benefit and adds wear."},{"d":"3.0","o":"3.2","q":"An iPhone user reports crashes only within one specific app; all other apps work correctly. What is the BEST first step?","c":["Replace the device under warranty","Disable cellular data","Perform a factory reset of the phone","Update the app, then remove and reinstall it if the issue persists"],"a":3,"e":"When a fault is isolated to one application, address that application first. A factory reset or device replacement is a disproportionate response to a single misbehaving app."},{"d":"3.0","o":"3.4","q":"During malware remediation, which step prevents the system from restoring the infection from a previously saved point?","c":["Roll back all device drivers","Enable System Restore before scanning","Disable System Restore and remove existing restore points before remediating","Reinstall the web browser"],"a":2,"e":"Malware can be captured inside restore points, so System Restore is disabled and old points are purged before remediation, then re-enabled with a clean restore point created afterward."},{"d":"3.0","o":"3.1","q":"A workstation is unusually slow and the drive activity light stays on constantly even when idle. Which tool BEST identifies which process is responsible for the disk I/O?","c":["Resource Monitor","Disk Cleanup","msconfig","Device Manager"],"a":0,"e":"Resource Monitor breaks out disk activity per process, including read/write rates and response times. Device Manager shows hardware status, Disk Cleanup frees space, and msconfig controls boot and startup options."},{"d":"3.0","o":"3.4","q":"A workstation repeatedly fails to install operating system security updates. What should the technician verify FIRST?","c":["The monitor cable connection","The keyboard layout setting","The print spooler queue","Available free disk space and the status of the Windows Update service"],"a":3,"e":"Insufficient free space and a stopped or corrupted update service are the two most common causes of repeated update failures. The remaining options have no relationship to the update process."},{"d":"3.0","o":"3.3","q":"Employees downloaded a company-branded mobile app from a third-party website, and it requests access to contacts, SMS, and location. Which is the MOST likely explanation?","c":["A spoofed or repackaged malicious version of the app","Standard behavior for all corporate applications","A required carrier configuration","A failing device battery"],"a":0,"e":"Apps sideloaded from unofficial sources are frequently repackaged with malware, and excessive permission requests that do not match the app's function are a primary indicator of a bootleg or spoofed app."},{"d":"4.0","o":"4.3","q":"Which backup rotation scheme organizes media into daily, weekly, and monthly sets that are retained for different lengths of time?","c":["Incremental-only","3-2-1","Grandfather-Father-Son (GFS)","Synthetic full"],"a":2,"e":"GFS retains daily (son), weekly (father), and monthly (grandfather) sets, balancing media cost against recovery depth. 3-2-1 describes copy and location redundancy, not rotation scheduling."},{"d":"4.0","o":"4.2","q":"A change request is under review by the change board. Which element identifies what could go wrong if the change is implemented and how likely that is?","c":["The rollback plan","The purpose of the change","The scope of the change","The risk analysis"],"a":3,"e":"Risk analysis assesses the probability and impact of potential negative outcomes and assigns a risk level. Scope defines boundaries, the rollback plan covers recovery after failure, and purpose explains the business justification."},{"d":"4.0","o":"4.8","q":"Which task is the BEST candidate for automation with a script?","c":["Physically replacing failed hard drives in a server rack","Restarting a specific service on 200 workstations every night","Interviewing users to gather requirements","Negotiating and signing a service level agreement"],"a":1,"e":"Scripting excels at repetitive, well-defined tasks executed across many systems, such as service restarts, drive mapping, and scheduled backups. Physical, interpersonal, and contractual work cannot be scripted."},{"d":"4.0","o":"4.6","q":"Following the order of volatility, which evidence should be collected FIRST during an incident investigation?","c":["Archived log files on a SAN","Data stored on offsite backup tapes","Data in system RAM and cache","Data written to the local hard drive"],"a":2,"e":"Order of volatility collects the most transient data first. CPU cache and RAM are lost on power-down, while disks, archives, and backups persist and can be imaged later."},{"d":"4.0","o":"4.6","q":"A small business purchased one retail copy of a productivity suite and wants to install it on 30 office computers. What is the concern?","c":["The software will run slower on each additional machine","The software must be reinstalled every 30 days","The installation media will physically wear out","Installing beyond the licensed count violates the EULA; a volume or enterprise license is required"],"a":3,"e":"A personal or single-seat license permits a limited number of installations, and exceeding it breaches the end user license agreement and exposes the business to audit penalties. Corporate deployments require volume or enterprise licensing."},{"d":"4.0","o":"4.10","q":"A technician asks an AI assistant for a Windows command, and the assistant confidently returns a command that does not exist. This output is BEST described as:","c":["A hallucination","Bias","Encryption","A zero-day"],"a":0,"e":"A hallucination is confidently stated but fabricated or incorrect AI output, which is why all AI-generated technical guidance must be verified before use. Bias refers to skewed outputs caused by training data, not fabricated facts."},{"d":"4.0","o":"4.7","q":"A user is visibly frustrated about an issue that has recurred three times this month. Which approach is MOST appropriate?","c":["Explain who caused the problem so the user knows it is not your fault","Listen actively without interrupting, avoid being judgmental, clarify the issue with open-ended questions, and set realistic expectations","Transfer the call to another department immediately","Explain the root cause using detailed technical terminology"],"a":1,"e":"Active listening, avoiding judgment, clarifying with open-ended questions, and setting realistic expectations are the documented professionalism behaviors for difficult customer situations. Assigning blame, deflecting, and using jargon all escalate frustration."}]}],"objectives":{"1.1":["Operating Systems","https://www.professormesser.com/free-a-plus-training/220-1202/220-1202-video/operating-systems-overview-220-1202/"],"1.2":["Installing Operating Systems","https://www.professormesser.com/free-a-plus-training/220-1202/220-1202-video/installing-operating-systems-220-1202/"],"1.3":["Microsoft Windows","https://www.professormesser.com/free-a-plus-training/220-1202/220-1202-video/an-overview-of-windows-220-1202/"],"1.4":["The Windows OS (tools)","https://www.professormesser.com/free-a-plus-training/220-1202/220-1202-video/the-microsoft-management-console-220-1202/"],"1.5":["The Windows Command Line","https://www.professormesser.com/free-a-plus-training/220-1202/220-1202-video/windows-command-line-tools-220-1202/"],"1.6":["Windows Settings","https://www.professormesser.com/free-a-plus-training/220-1202/220-1202-video/the-windows-control-panel-220-1202/"],"1.7":["Windows Networking","https://www.professormesser.com/free-a-plus-training/220-1202/220-1202-video/windows-network-technologies-220-1202/"],"1.8":["macOS","https://www.professormesser.com/free-a-plus-training/220-1202/220-1202-video/macos-overview-220-1202/"],"1.9":["Linux","https://www.professormesser.com/free-a-plus-training/220-1202/220-1202-video/linux-220-1202/"],"1.10":["Installing Applications","https://www.professormesser.com/free-a-plus-training/220-1202/220-1202-video/installing-applications-220-1202/"],"1.11":["Cloud Productivity","https://www.professormesser.com/free-a-plus-training/220-1202/220-1202-video/cloud-productivity-tools-220-1202/"],"2.1":["Security Measures","https://www.professormesser.com/free-a-plus-training/220-1202/220-1202-video/physical-security-220-1202/"],"2.2":["Windows Security","https://www.professormesser.com/free-a-plus-training/220-1202/220-1202-video/windows-security-settings-220-1202/"],"2.3":["Wireless Security","https://www.professormesser.com/free-a-plus-training/220-1202/220-1202-video/wireless-encryption-220-1202/"],"2.4":["Malware","https://www.professormesser.com/free-a-plus-training/220-1202/220-1202-video/malware-220-1202/"],"2.5":["Social Engineering & Attacks","https://www.professormesser.com/free-a-plus-training/220-1202/220-1202-video/social-engineering-220-1202/"],"2.6":["Malware Removal","https://www.professormesser.com/free-a-plus-training/220-1202/220-1202-video/removing-malware-220-1202/"],"2.7":["Security Best Practices","https://www.professormesser.com/free-a-plus-training/220-1202/220-1202-video/security-best-practices-220-1202/"],"2.8":["Mobile Device Security","https://www.professormesser.com/free-a-plus-training/220-1202/220-1202-video/mobile-device-security-220-1202/"],"2.9":["Data Destruction","https://www.professormesser.com/free-a-plus-training/220-1202/220-1202-video/data-destruction-220-1202/"],"2.10":["SOHO Networks","https://www.professormesser.com/free-a-plus-training/220-1202/220-1202-video/securing-a-soho-network-220-1202/"],"2.11":["Browser Security","https://www.professormesser.com/free-a-plus-training/220-1202/220-1202-video/browser-security-220-1202/"],"3.1":["Troubleshooting Windows","https://www.professormesser.com/free-a-plus-training/220-1202/220-1202-video/troubleshooting-windows-220-1202/"],"3.2":["Troubleshooting Mobile Devices","https://www.professormesser.com/free-a-plus-training/220-1202/220-1202-video/troubleshooting-mobile-devices-220-1202/"],"3.3":["Troubleshooting Mobile Security","https://www.professormesser.com/free-a-plus-training/220-1202/220-1202-video/troubleshooting-mobile-device-security-220-1202/"],"3.4":["Troubleshooting Security Issues","https://www.professormesser.com/free-a-plus-training/220-1202/220-1202-video/troubleshooting-security-issues-220-1202/"],"4.1":["Documentation & Support Systems","https://www.professormesser.com/free-a-plus-training/220-1202/220-1202-video/ticketing-systems-220-1202/"],"4.2":["Change Management","https://www.professormesser.com/free-a-plus-training/220-1202/220-1202-video/change-management-220-1202/"],"4.3":["Backup and Recovery","https://www.professormesser.com/free-a-plus-training/220-1202/220-1202-video/managing-backups-220-1202/"],"4.4":["Safety","https://www.professormesser.com/free-a-plus-training/220-1202/220-1202-video/managing-electrostatic-discharge-220-1202/"],"4.5":["Environmental Impacts","https://www.professormesser.com/free-a-plus-training/220-1202/220-1202-video/environmental-impacts-220-1202/"],"4.6":["Privacy, Licensing & Policies","https://www.professormesser.com/free-a-plus-training/220-1202/220-1202-video/incident-response-220-1202/"],"4.7":["Communication & Professionalism","https://www.professormesser.com/free-a-plus-training/220-1202/220-1202-video/professionalism-220-1202/"],"4.8":["Scripting","https://www.professormesser.com/free-a-plus-training/220-1202/220-1202-video/scripting-languages-220-1202/"],"4.9":["Remote Access","https://www.professormesser.com/free-a-plus-training/220-1202/220-1202-video/remote-access-220-1202/"],"4.10":["Artificial Intelligence","https://www.professormesser.com/free-a-plus-training/220-1202/220-1202-video/managing-ai-220-1202/"]},"domainNames":{"1.0":"Operating Systems","2.0":"Security","3.0":"Software Troubleshooting","4.0":"Operational Procedures"}};
+var F = 'font-family="-apple-system,Helvetica,Arial,sans-serif"';
+var M = 'font-family="ui-monospace,SFMono-Regular,Menlo,monospace"';
+
+/* ---------- 1. malware removal ---------- */
+var STEPS = [
+  "Investigate and verify symptoms",
+  "Quarantine the device",
+  "Disable System Restore",
+  "Remediate — scan and remove",
+  "Schedule scans and run updates",
+  "Re-enable System Restore",
+  "Educate the end user"
+];
+var sv1 = '<svg viewBox="0 0 360 ' + (STEPS.length*46 + 10) + '" role="img" aria-label="Seven malware removal steps in order">' +
+  '<line x1="24" y1="23" x2="24" y2="' + (23 + (STEPS.length-1)*46) + '" stroke="#2A3140" stroke-width="2"/>' +
+  STEPS.map(function(s,i){
+    var y = 23 + i*46;
+    var hot = (i===1 || i===2);
+    return '<circle cx="24" cy="'+y+'" r="15" fill="'+(hot?"#FFB020":"#1D222D")+'" stroke="'+(hot?"#FFB020":"#3A4354")+'" stroke-width="2"/>' +
+           '<text x="24" y="'+(y+5)+'" '+M+' font-size="14" font-weight="700" fill="'+(hot?"#17120A":"#8C95A6")+'" text-anchor="middle">'+(i+1)+'</text>' +
+           '<text x="52" y="'+(y+5)+'" '+F+' font-size="13.5" fill="#EDF0F5">'+s+'</text>';
+  }).join("") + '</svg>';
+
+/* ---------- 2. backup types ---------- */
+var BW = 67.2, BG = 6, BH = 34;
+function dayHdr(){
+  var lbl = ["SUN","MON","TUE","WED","THU"], o = "";
+  for(var i=0;i<5;i++){
+    o += '<text x="'+(i*(BW+BG) + BW/2)+'" y="11" '+M+' font-size="9.5" fill="#5C6575" text-anchor="middle" letter-spacing="1">'+lbl[i]+'</text>';
+  }
+  return o;
+}
+function brow(y, name, sub, heights, colors){
+  var o = '<text x="0" y="'+(y+12)+'" '+F+' font-size="13" font-weight="700" fill="#EDF0F5">'+name+'</text>' +
+          '<text x="360" y="'+(y+12)+'" '+F+' font-size="10.5" fill="#8C95A6" text-anchor="end">'+sub+'</text>';
+  for(var i=0;i<5;i++){
+    var x = i*(BW+BG), h = heights[i], top = y + 22 + (BH - h);
+    o += '<rect x="'+x+'" y="'+(y+22)+'" width="'+BW+'" height="'+BH+'" rx="5" fill="#161A22" stroke="#2A3140"/>';
+    if(h) o += '<rect x="'+x+'" y="'+top+'" width="'+BW+'" height="'+h+'" rx="5" fill="'+colors[i]+'"/>';
+  }
+  return o;
+}
+var G = "#FFB020", T = "#35D08A";
+var sv2 = '<svg viewBox="0 0 360 258" role="img" aria-label="Full, incremental and differential backup comparison">' +
+  dayHdr() +
+  brow(22,  "Full",         "every file, every time",     [34,34,34,34,34], [G,G,G,G,G]) +
+  brow(98,  "Incremental",  "since the LAST backup",      [34,9,9,9,9],     [G,T,T,T,T]) +
+  brow(174, "Differential", "since the last FULL backup", [34,9,16,24,32],  [G,T,T,T,T]) +
+  '</svg>';
+
+/* ---------- 3. order of volatility ---------- */
+var VOL = [
+  ["CPU cache and registers", "gone in nanoseconds"],
+  ["RAM", "gone at power-off"],
+  ["Network state, temp files", "gone on reboot"],
+  ["Disk", "persists"],
+  ["Remote logs and monitoring", "persists"],
+  ["Archives and backups", "persists longest"]
+];
+var sv3 = '<svg viewBox="0 0 360 ' + (VOL.length*42 + 26) + '" role="img" aria-label="Order of volatility from most to least volatile">' +
+  '<text x="0" y="12" '+M+' font-size="9.5" fill="#FF6B6B" letter-spacing="1">COLLECT FIRST</text>' +
+  '<text x="360" y="'+(VOL.length*42 + 22)+'" '+M+' font-size="9.5" fill="#35D08A" letter-spacing="1" text-anchor="end">COLLECT LAST</text>' +
+  VOL.map(function(v,i){
+    var y = 22 + i*42, w = 330 - i*26, x = (360 - w)/2;
+    var tint = ["#FF6B6B","#FF8A6B","#FFB020","#8C95A6","#6E97C9","#35D08A"][i];
+    return '<rect x="'+x+'" y="'+y+'" width="'+w+'" height="34" rx="7" fill="#1D222D" stroke="'+tint+'" stroke-width="1.5"/>' +
+           '<rect x="'+x+'" y="'+y+'" width="4" height="34" rx="2" fill="'+tint+'"/>' +
+           '<text x="'+(x+14)+'" y="'+(y+15)+'" '+F+' font-size="12.5" font-weight="600" fill="#EDF0F5">'+v[0]+'</text>' +
+           '<text x="'+(x+14)+'" y="'+(y+28)+'" '+F+' font-size="10" fill="#8C95A6">'+v[1]+'</text>';
+  }).join("") + '</svg>';
+
+/* ---------- 4. NTFS vs share ---------- */
+function box(x,y,w,label,sub,stroke){
+  return '<rect x="'+x+'" y="'+y+'" width="'+w+'" height="38" rx="7" fill="#1D222D" stroke="'+stroke+'" stroke-width="1.5"/>' +
+         '<text x="'+(x+w/2)+'" y="'+(y+(sub?16:23))+'" '+F+' font-size="11.5" font-weight="700" fill="#EDF0F5" text-anchor="middle">'+label+'</text>' +
+         (sub ? '<text x="'+(x+w/2)+'" y="'+(y+29)+'" '+F+' font-size="9" fill="#8C95A6" text-anchor="middle">'+sub+'</text>' : '');
+}
+function arrow(x,y){ return '<text x="'+x+'" y="'+(y+24)+'" '+F+' font-size="15" fill="#5C6575" text-anchor="middle">›</text>'; }
+var sv4 = '<svg viewBox="0 0 360 200" role="img" aria-label="Which permissions apply locally versus over the network">' +
+  '<text x="0" y="12" '+M+' font-size="9.5" fill="#8C95A6" letter-spacing="1">SIGNED IN AT THE MACHINE</text>' +
+  box(0,22,104,"Local user","","#2A3140") + arrow(116,22) +
+  box(128,22,104,"NTFS","permissions","#35D08A") + arrow(244,22) +
+  box(256,22,104,"File","","#2A3140") +
+
+  '<text x="0" y="98" '+M+' font-size="9.5" fill="#8C95A6" letter-spacing="1">CONNECTING OVER THE NETWORK</text>' +
+  box(0,108,86,"Network user","","#2A3140") + arrow(93,108) +
+  box(100,108,80,"Share","permissions","#FFB020") + arrow(187,108) +
+  box(194,108,80,"NTFS","permissions","#35D08A") + arrow(281,108) +
+  box(288,108,72,"File","","#2A3140") +
+  '<text x="180" y="168" '+F+' font-size="12" font-weight="700" fill="#FFB020" text-anchor="middle">Both apply — the most restrictive wins</text>' +
+  '<text x="180" y="186" '+F+' font-size="11" fill="#8C95A6" text-anchor="middle">Share: Full Control + NTFS: Read = the user gets Read</text>' +
+  '</svg>';
+
+/* ---------- 5. wireless security ---------- */
+var WIFI = [
+  ["WEP",  "RC4, static key",       "Broken",      "#FF6B6B"],
+  ["WPA",  "TKIP with RC4",         "Deprecated",  "#FF8A6B"],
+  ["WPA2", "AES with CCMP",         "Acceptable",  "#35D08A"],
+  ["WPA3", "SAE + AES with GCMP",   "Current",     "#35D08A"]
+];
+var sv5 = '<svg viewBox="0 0 360 ' + (WIFI.length*52 + 6) + '" role="img" aria-label="Wireless security standards and their ciphers">' +
+  WIFI.map(function(w,i){
+    var y = i*52;
+    return '<rect x="0" y="'+y+'" width="360" height="44" rx="9" fill="#1D222D" stroke="#2A3140"/>' +
+           '<rect x="0" y="'+y+'" width="5" height="44" rx="2.5" fill="'+w[3]+'"/>' +
+           '<text x="18" y="'+(y+19)+'" '+M+' font-size="15" font-weight="700" fill="#EDF0F5">'+w[0]+'</text>' +
+           '<text x="18" y="'+(y+35)+'" '+F+' font-size="11.5" fill="#8C95A6">'+w[1]+'</text>' +
+           '<rect x="252" y="'+(y+13)+'" width="94" height="20" rx="10" fill="'+w[3]+'" opacity="0.16"/>' +
+           '<text x="299" y="'+(y+27)+'" '+M+' font-size="10" font-weight="700" fill="'+w[3]+'" text-anchor="middle" letter-spacing="0.5">'+w[2].toUpperCase()+'</text>';
+  }).join("") + '</svg>';
+
+/* ---------- 6. MBR vs GPT ---------- */
+function specCard(x, title, rows, accent){
+  var o = '<rect x="'+x+'" y="0" width="172" height="152" rx="11" fill="#1D222D" stroke="'+accent+'" stroke-width="1.5"/>' +
+          '<text x="'+(x+86)+'" y="26" '+M+' font-size="16" font-weight="700" fill="'+accent+'" text-anchor="middle">'+title+'</text>';
+  rows.forEach(function(r,i){
+    var y = 52 + i*32;
+    o += '<text x="'+(x+86)+'" y="'+y+'" '+F+' font-size="14" font-weight="700" fill="#EDF0F5" text-anchor="middle">'+r[0]+'</text>' +
+         '<text x="'+(x+86)+'" y="'+(y+14)+'" '+F+' font-size="10" fill="#8C95A6" text-anchor="middle">'+r[1]+'</text>';
+  });
+  return o;
+}
+var sv6 = '<svg viewBox="0 0 360 152" role="img" aria-label="MBR versus GPT partition limits">' +
+  specCard(0,   "MBR", [["2 TB","maximum disk size"],["4","primary partitions"],["BIOS","legacy firmware"]], "#FF8A6B") +
+  specCard(188, "GPT", [["9.4 ZB","maximum disk size"],["128","partitions"],["UEFI","modern firmware"]], "#35D08A") +
+  '</svg>';
+
+/* ---------- 7. Windows editions ---------- */
+var EDROWS = [
+  ["Join an Active Directory domain", 0],
+  ["BitLocker drive encryption", 0],
+  ["Group Policy Editor (gpedit)", 0],
+  ["Host a Remote Desktop session", 0],
+  ["Connect out via Remote Desktop", 1]
+];
+var tbl7 = '<table class="vtable"><thead><tr><th>Feature</th><th style="text-align:center">Home</th><th style="text-align:center">Pro</th></tr></thead><tbody>' +
+  EDROWS.map(function(r){
+    return '<tr><td>'+r[0]+'</td>' +
+           '<td class="'+(r[1]?"y":"n")+'">'+(r[1]?"✓":"✕")+'</td>' +
+           '<td class="y">✓</td></tr>';
+  }).join("") + '</tbody></table>';
+
+/* ---------- export ---------- */
+var VISUALS = [
+  { t:"Malware removal — the 7 steps, in order",
+    b: sv1 + '<p class="cap">Steps 2 and 3 are the ones people reverse. Quarantine before you touch anything, and kill System Restore before you remediate, or the infection comes back from a restore point.</p>' },
+
+  { t:"Full vs. incremental vs. differential",
+    b: sv2 + '<p class="cap">Incremental stays small every day but a restore needs the full plus <em>every</em> incremental since. Differential grows daily but restores from just the full plus the latest one. Incremental clears the archive bit; differential does not.</p>' },
+
+  { t:"Order of volatility",
+    b: sv3 + '<p class="cap">Collect the stuff that disappears first. Anything above the line vanishes when the machine loses power, so RAM is captured before you ever image a disk.</p>' },
+
+  { t:"NTFS vs. share permissions",
+    b: sv4 + '<p class="cap">NTFS applies no matter how the user arrives. Share permissions only exist on the network path. When both are in play, the effective permission is whichever is <em>more</em> restrictive.</p>' },
+
+  { t:"Wireless security — what uses what",
+    b: sv5 + '<p class="cap">The exam loves "which one uses SAE" — that is WPA3 only. SAE replaces the WPA2 four-way handshake so a captured handshake cannot be brute-forced offline.</p>' },
+
+  { t:"MBR vs. GPT",
+    b: sv6 + '<p class="cap">Any question mentioning a drive over 2 TB, or more than four primary partitions, is answered by GPT.</p>' },
+
+  { t:"Windows Home vs. Pro",
+    b: tbl7 + '<p class="cap">Home can <em>connect out</em> with Remote Desktop but cannot <em>host</em> a session. Every other row here is a Pro-and-above feature, and that distinction is a recurring question.</p>' }
+];
+
+"use strict";
+var L = ["A","B","C","D"];
+var $ = function(id){ return document.getElementById(id); };
+var KEY = "apcore2.v1";
+
+/* ---------------- storage (optional, never load-bearing) ---------------- */
+function save(o){ try{ localStorage.setItem(KEY, JSON.stringify(o)); }catch(e){} }
+function load(){ try{ var r = localStorage.getItem(KEY); return r ? JSON.parse(r) : null; }catch(e){ return null; } }
+function wipe(){ try{ localStorage.removeItem(KEY); }catch(e){} }
+
+/* ---------------- state ---------------- */
+var S = { pool:[], picks:[], i:0, mode:"study", setKey:"t0", label:"Test 1", t0:0, elapsed:0, timer:null, done:false, revealed:[] };
+
+var SETS = [
+  { k:"t0",  t:"Test 1",     s:"30 questions" },
+  { k:"t1",  t:"Test 2",     s:"30 questions" },
+  { k:"t2",  t:"Test 3",     s:"30 questions" },
+  { k:"mix", t:"Random 30",  s:"pulled from all 90" },
+  { k:"all", t:"Marathon",   s:"all 90 questions" }
+];
+var chosenSet = "t0";
+
+/* ---------------- helpers ---------------- */
+function esc(s){ return String(s).replace(/[&<>"]/g, function(m){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]; }); }
+function shuffle(a){ a = a.slice(); for(var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=a[i]; a[i]=a[j]; a[j]=t; } return a; }
+function fmt(sec){ var m=Math.floor(sec/60), s=sec%60; return (m<10?"0":"")+m+":"+(s<10?"0":"")+s; }
+function show(id){
+  ["scHome","scQuiz","scRes","scVis"].forEach(function(x){ $(x).classList.add("hide"); });
+  $(id).classList.remove("hide");
+}
+
+/* ---------------- home ---------------- */
+function drawSets(){
+  $("setGrid").innerHTML = SETS.map(function(s,i){
+    return '<button class="chip'+(i>=3?" wide":"")+'" data-k="'+s.k+'" aria-pressed="'+(chosenSet===s.k)+'">'+
+           '<span class="t">'+s.t+'</span><span class="s">'+s.s+'</span></button>';
+  }).join("");
+  Array.prototype.forEach.call($("setGrid").querySelectorAll(".chip"), function(b){
+    b.onclick = function(){ chosenSet = b.dataset.k; drawSets(); };
+  });
+}
+var MODE_NOTE = {
+  study: "Each answer is graded the moment you tap it, with the explanation and the video link right there. Best for learning.",
+  exam:  "No feedback until the end, and the clock runs. Use this to find out where you actually stand."
+};
+function drawMode(){
+  Array.prototype.forEach.call($("modeSeg").querySelectorAll("button"), function(b){
+    b.setAttribute("aria-pressed", String(b.dataset.m === S.mode));
+  });
+  $("modeNote").textContent = MODE_NOTE[S.mode];
+}
+Array.prototype.forEach.call($("modeSeg").querySelectorAll("button"), function(b){
+  b.onclick = function(){ S.mode = b.dataset.m; drawMode(); };
+});
+
+function tabTo(t){
+  if(t === "visuals"){ show("scVis"); } else { show("scHome"); }
+  ["tabbar","tabbar2"].forEach(function(id){
+    Array.prototype.forEach.call($(id).querySelectorAll("button"), function(b){
+      b.setAttribute("aria-pressed", String(b.dataset.tab === t));
+    });
+  });
+}
+["tabbar","tabbar2"].forEach(function(id){
+  Array.prototype.forEach.call($(id).querySelectorAll("button"), function(b){
+    b.onclick = function(){ tabTo(b.dataset.tab); };
+  });
+});
+
+/* ---------------- build + start ---------------- */
+function buildPool(k){
+  var qs;
+  if(k === "all")      qs = DATA.tests.reduce(function(a,t){ return a.concat(t.questions); }, []);
+  else if(k === "mix") qs = shuffle(DATA.tests.reduce(function(a,t){ return a.concat(t.questions); }, [])).slice(0,30);
+  else                 qs = DATA.tests[+k.slice(1)].questions.slice();
+  return qs.map(function(q){ var o = {}; for(var p in q) o[p]=q[p]; o.c = q.c.slice(); return o; });
+}
+
+function start(k, mode){
+  var def = SETS.filter(function(s){ return s.k===k; })[0];
+  S.setKey = k;
+  S.label = def ? def.t : "Practice";
+  S.mode = mode;
+  S.pool = buildPool(k);
+  S.picks = new Array(S.pool.length);
+  S.revealed = new Array(S.pool.length);
+  S.i = 0; S.done = false; S.elapsed = 0;
+  startClock();
+  $("quizTitle").textContent = S.label;
+  show("scQuiz");
+  renderRail();
+  renderQ();
+  persist();
+}
+
+function persist(){
+  if(S.done) { wipe(); return; }
+  save({ setKey:S.setKey, label:S.label, mode:S.mode, i:S.i, picks:S.picks, revealed:S.revealed, elapsed:S.elapsed, n:S.pool.length });
+}
+
+function startClock(){
+  if(S.timer) clearInterval(S.timer);
+  S.t0 = Date.now() - S.elapsed*1000;
+  var tick = function(){
+    S.elapsed = Math.floor((Date.now()-S.t0)/1000);
+    $("clock").textContent = fmt(S.elapsed);
+  };
+  tick();
+  S.timer = setInterval(tick, 1000);
+}
+function stopClock(){ if(S.timer){ clearInterval(S.timer); S.timer = null; } }
+
+/* ---------------- rail + jump ---------------- */
+function segClass(i){
+  var p = S.picks[i];
+  if(i === S.i) return "seg now";
+  if(p === undefined || p === null) return "seg";
+  if(S.revealed[i]) return "seg " + (p === S.pool[i].a ? "ok" : "no");
+  return "seg ans";
+}
+function renderRail(){
+  var r = $("rail");
+  r.classList.toggle("dense", S.pool.length > 40);
+  r.innerHTML = S.pool.map(function(_,i){ return '<span class="'+segClass(i)+'"></span>'; }).join("");
+}
+$("jumpBtn").onclick = function(){
+  $("jgrid").innerHTML = S.pool.map(function(_,i){
+    var p = S.picks[i], cls = "jt";
+    if(i === S.i) cls += " now";
+    else if(p === undefined || p === null) cls += "";
+    else if(S.revealed[i]) cls += (p === S.pool[i].a ? " ok" : " no");
+    else cls += " ans";
+    return '<button class="'+cls+'" data-i="'+i+'">'+(i+1)+'</button>';
+  }).join("");
+  Array.prototype.forEach.call($("jgrid").querySelectorAll(".jt"), function(b){
+    b.onclick = function(){ S.i = +b.dataset.i; $("sheet").classList.add("hide"); renderQ(); renderRail(); };
+  });
+  $("sheet").classList.remove("hide");
+};
+$("sheetClose").onclick = function(){ $("sheet").classList.add("hide"); };
+$("sheet").onclick = function(e){ if(e.target === $("sheet")) $("sheet").classList.add("hide"); };
+
+/* ---------------- question ---------------- */
+function renderQ(){
+  var q = S.pool[S.i];
+  $("qNum").textContent = String(S.i+1).padStart(2,"0") + " / " + S.pool.length;
+  $("qDom").textContent = q.d + " " + DATA.domainNames[q.d];
+  $("qDom").className = "badge d" + q.d.charAt(0);
+  $("qObj").textContent = "Obj " + q.o;
+  $("qText").textContent = q.q;
+
+  $("qOpts").innerHTML = q.c.map(function(c,ci){
+    return '<button class="opt" data-c="'+ci+'"><span class="ltr">'+L[ci]+'</span><span class="otx">'+esc(c)+'</span></button>';
+  }).join("");
+  Array.prototype.forEach.call($("qOpts").querySelectorAll(".opt"), function(b){
+    b.onclick = function(){ pick(+b.dataset.c); };
+  });
+
+  $("qExpl").innerHTML = "";
+  paintOpts();
+  updateAct();
+  $("qScroll").scrollTop = 0;
+}
+
+function paintOpts(){
+  var q = S.pool[S.i], p = S.picks[S.i], shown = S.revealed[S.i];
+  var opts = $("qOpts").querySelectorAll(".opt");
+  $("qOpts").classList.toggle("locked", !!shown);
+  Array.prototype.forEach.call(opts, function(b,k){
+    b.className = "opt";
+    if(shown){
+      if(k === q.a) b.classList.add("right");
+      else if(k === p) b.classList.add("wrong");
+    } else if(k === p){
+      b.classList.add("sel");
+    }
+  });
+  if(shown) renderExpl(); else $("qExpl").innerHTML = "";
+}
+
+function renderExpl(){
+  var q = S.pool[S.i], ok = S.picks[S.i] === q.a;
+  var om = DATA.objectives[q.o];
+  $("qExpl").innerHTML =
+    '<div class="expl '+(ok?"good":"bad")+'">'+
+      '<div class="verdict">'+(ok ? "✓ Correct" : "✕ Answer is " + L[q.a]) + '</div>'+
+      '<p>'+esc(q.e)+'</p>'+
+      '<a href="'+om[1]+'" target="_blank" rel="noopener">▶ Watch '+esc(q.o+" "+om[0])+'</a>'+
+    '</div>';
+}
+
+function pick(ci){
+  if(S.revealed[S.i]) return;
+  S.picks[S.i] = ci;
+  if(S.mode === "study"){ S.revealed[S.i] = true; }
+  paintOpts();
+  renderRail();
+  updateAct();
+  persist();
+  if(S.mode === "exam" && S.i < S.pool.length - 1){ setTimeout(next, 180); }
+}
+
+function updateAct(){
+  $("prevBtn").disabled = S.i === 0;
+  var last = S.i === S.pool.length - 1;
+  var btn = $("nextBtn");
+  if(last){
+    var unanswered = 0;
+    for(var i=0;i<S.pool.length;i++){
+      var p = S.picks[i];
+      if(p === undefined || p === null) unanswered++;
+    }
+    btn.textContent = unanswered ? ("Finish — " + unanswered + " left blank") : "See results";
+    btn.classList.toggle("dim", unanswered > 0);
+  } else {
+    btn.textContent = "Next";
+    btn.classList.remove("dim");
+  }
+}
+
+function next(){
+  if(S.i < S.pool.length - 1){ S.i++; renderQ(); renderRail(); persist(); }
+  else finish();
+}
+function prev(){ if(S.i > 0){ S.i--; renderQ(); renderRail(); persist(); } }
+$("nextBtn").onclick = next;
+$("prevBtn").onclick = prev;
+
+/* swipe between questions */
+(function(){
+  var x0=0, y0=0, t0=0, active=false;
+  var el = $("qScroll");
+  el.addEventListener("touchstart", function(e){
+    if(e.touches.length !== 1) { active=false; return; }
+    active=true; x0=e.touches[0].clientX; y0=e.touches[0].clientY; t0=Date.now();
+  }, {passive:true});
+  el.addEventListener("touchend", function(e){
+    if(!active) return; active=false;
+    var t = e.changedTouches[0];
+    var dx = t.clientX - x0, dy = t.clientY - y0;
+    if(Date.now()-t0 > 700) return;
+    if(Math.abs(dx) < 65 || Math.abs(dx) < Math.abs(dy)*1.6) return;
+    if(dx < 0) next(); else prev();
+  }, {passive:true});
+})();
+
+/* ---------------- results ---------------- */
+function finish(){
+  stopClock();
+  S.done = true;
+  for(var i=0;i<S.pool.length;i++) S.revealed[i] = true;
+  wipe();
+
+  var correct = 0;
+  S.pool.forEach(function(q,i){ if(S.picks[i] === q.a) correct++; });
+  var pct = Math.round(correct / S.pool.length * 100);
+
+  $("resPct").textContent = pct + "%";
+  $("resFrac").textContent = correct + " of " + S.pool.length;
+  $("resTime").textContent = fmt(S.elapsed);
+
+  var col = pct >= 83 ? "#35D08A" : pct >= 70 ? "#FFB020" : "#FF6B6B";
+  var arc = $("ringArc");
+  arc.setAttribute("stroke", col);
+  arc.style.strokeDashoffset = "452.4";
+  setTimeout(function(){ arc.style.strokeDashoffset = String(452.4 * (1 - pct/100)); }, 60);
+
+  $("resVerdict").innerHTML = pct >= 83
+    ? "<strong>Exam-ready.</strong>Hold this on a cold run and book the test."
+    : pct >= 70
+      ? "<strong>Passing, but no margin.</strong>Clear the rewatch list, then take a different set cold."
+      : "<strong>Not yet.</strong>Work the rewatch list before drilling more questions — more tests won't fix a content gap.";
+
+  var dm = {};
+  S.pool.forEach(function(q,i){
+    if(!dm[q.d]) dm[q.d] = {c:0,t:0};
+    dm[q.d].t++; if(S.picks[i] === q.a) dm[q.d].c++;
+  });
+  $("resBars").innerHTML = Object.keys(dm).sort(function(a,b){
+    return (dm[a].c/dm[a].t) - (dm[b].c/dm[b].t);
+  }).map(function(k){
+    var v = dm[k], p = Math.round(v.c/v.t*100);
+    var c = p >= 83 ? "var(--ok)" : p >= 70 ? "var(--gold)" : "var(--bad)";
+    return '<div class="brow"><div class="top"><span class="nm">'+esc(DATA.domainNames[k])+'</span>'+
+           '<span class="vl">'+v.c+"/"+v.t+" · "+p+'%</span></div>'+
+           '<div class="btrack"><div class="bfill" style="width:'+p+'%;background:'+c+'"></div></div></div>';
+  }).join("");
+
+  var miss = {};
+  S.pool.forEach(function(q,i){ if(S.picks[i] !== q.a) miss[q.o] = (miss[q.o]||0) + 1; });
+  var keys = Object.keys(miss).sort(function(a,b){ return miss[b]-miss[a] || parseFloat(a)-parseFloat(b); });
+  $("resWatch").innerHTML = keys.length
+    ? keys.map(function(k){
+        var om = DATA.objectives[k];
+        return '<a class="rw" href="'+om[1]+'" target="_blank" rel="noopener">'+
+               '<span class="code">'+k+'</span>'+
+               '<span class="nm">'+esc(om[0])+'<small>'+miss[k]+' missed</small></span>'+
+               '<span class="go">›</span></a>';
+      }).join("")
+    : '<p class="allgood">Nothing missed. Take a different set cold to confirm it wasn\'t luck.</p>';
+
+  show("scRes");
+}
+
+$("retryMissed").onclick = function(){
+  var missed = S.pool.filter(function(q,i){ return S.picks[i] !== q.a; });
+  if(!missed.length){ tabTo("home"); return; }
+  S.pool = missed.map(function(q){ var o={}; for(var p in q) o[p]=q[p]; o.c=q.c.slice(); return o; });
+  S.picks = new Array(S.pool.length);
+  S.revealed = new Array(S.pool.length);
+  S.i = 0; S.done = false; S.elapsed = 0;
+  S.label = "Missed questions";
+  $("quizTitle").textContent = S.label;
+  startClock(); show("scQuiz"); renderRail(); renderQ(); persist();
+};
+$("reviewAll").onclick = function(){ S.i = 0; show("scQuiz"); renderRail(); renderQ(); };
+$("backHome").onclick = function(){ tabTo("home"); };
+$("closeRes").onclick = function(){ tabTo("home"); };
+$("closeQuiz").onclick = function(){
+  stopClock();
+  if(!S.done) persist();
+  tabTo("home");
+  refreshResume();
+};
+
+/* ---------------- resume ---------------- */
+function refreshResume(){
+  var r = load();
+  if(r && r.picks && r.n && !S.done){
+    var answered = 0;
+    for(var i=0;i<r.picks.length;i++){ if(r.picks[i] !== undefined && r.picks[i] !== null) answered++; }
+    $("resumeNote").textContent = r.label + " · " + (r.mode === "exam" ? "Exam mode" : "Study mode") +
+      " · question " + (r.i+1) + " of " + r.n + ", " + answered + " answered";
+    $("resumeCard").classList.remove("hide");
+  } else {
+    $("resumeCard").classList.add("hide");
+  }
+}
+$("resumeBtn").onclick = function(){
+  var r = load(); if(!r){ refreshResume(); return; }
+  S.setKey = r.setKey; S.label = r.label; S.mode = r.mode;
+  S.pool = buildPool(r.setKey);
+  if(r.picks.length !== S.pool.length){ wipe(); refreshResume(); return; }
+  S.picks = r.picks; S.revealed = r.revealed || new Array(S.pool.length);
+  S.i = Math.min(r.i || 0, S.pool.length-1); S.elapsed = r.elapsed || 0; S.done = false;
+  $("quizTitle").textContent = S.label;
+  startClock(); show("scQuiz"); renderRail(); renderQ();
+};
+$("discardBtn").onclick = function(){ wipe(); refreshResume(); };
+$("startBtn").onclick = function(){ wipe(); start(chosenSet, S.mode); };
+
+/* ---------------- visuals ---------------- */
+function drawVisuals(){
+  $("visList").innerHTML = VISUALS.map(function(v,i){
+    return '<div class="vcard">'+
+      '<button class="vhead" aria-expanded="'+(i===0)+'" data-i="'+i+'">'+
+        '<span class="n">'+String(i+1).padStart(2,"0")+'</span>'+
+        '<span class="t">'+v.t+'</span><span class="cv">›</span></button>'+
+      '<div class="vbody'+(i===0?"":" hide")+'" id="vb'+i+'">'+v.b+'</div>'+
+    '</div>';
+  }).join("");
+  Array.prototype.forEach.call($("visList").querySelectorAll(".vhead"), function(b){
+    b.onclick = function(){
+      var open = b.getAttribute("aria-expanded") === "true";
+      b.setAttribute("aria-expanded", String(!open));
+      $("vb" + b.dataset.i).classList.toggle("hide", open);
+    };
+  });
+}
+
+/* ---------------- boot ---------------- */
+drawSets(); drawMode(); drawVisuals(); refreshResume();
+window.addEventListener("pagehide", function(){ if(!S.done && S.pool.length) persist(); });
+document.addEventListener("visibilitychange", function(){
+  if(document.hidden){ if(!S.done && S.pool.length) persist(); }
+});
+
+
+if (typeof navigator !== "undefined" && "serviceWorker" in navigator && location.protocol === "https:") {
+  window.addEventListener("load", function(){ navigator.serviceWorker.register("sw.js").catch(function(){}); });
+}
+</script>
+</body>
+</html>
